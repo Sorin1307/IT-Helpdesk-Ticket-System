@@ -1,42 +1,174 @@
-from flask import Flask, render_template, request, redirect, url_for
-from datetime import datetime
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Helpdesk Ticket System</title>
 
-app = Flask(__name__)
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-tickets = []
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
 
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
 
-@app.route("/")
-def index():
-    return render_template("index.html", tickets=tickets)
+        h1 {
+            text-align: center;
+            color: #1d4ed8;
+        }
 
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
 
-@app.route("/create", methods=["POST"])
-def create_ticket():
-    ticket = {
-        "id": len(tickets) + 1,
-        "name": request.form.get("name", ""),
-        "email": request.form.get("email", ""),
-        "issue": request.form.get("issue", ""),
-        "description": request.form.get("description", ""),
-        "priority": request.form.get("priority", "Medium"),
-        "status": "Open",
-        "created_at": datetime.now().strftime("%d-%m-%Y %H:%M")
-    }
+        .card {
+            background: white;
+            padding: 24px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
 
-    tickets.append(ticket)
-    return redirect(url_for("index"))
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
 
+        input, textarea, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+        }
 
-@app.route("/update/<int:ticket_id>", methods=["POST"])
-def update_ticket(ticket_id):
-    for ticket in tickets:
-        if ticket["id"] == ticket_id:
-            ticket["status"] = request.form.get("status", "Open")
-            break
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
 
-    return redirect(url_for("index"))
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
+        button:hover {
+            background: #1d4ed8;
+        }
 
-if __name__ == "__main__":
-    app.run(debug=True)
+        .ticket {
+            border-left: 5px solid #2563eb;
+        }
+
+        .ticket h3 {
+            margin-top: 0;
+        }
+
+        .ticket-info {
+            color: #4b5563;
+        }
+
+        .status-form {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>IT Helpdesk Ticket System</h1>
+        <p class="subtitle">Submit and manage technical support requests</p>
+
+        <div class="card">
+            <h2>Create a New Ticket</h2>
+
+            <form action="/create" method="POST">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="issue">Issue Title</label>
+                <input type="text" id="issue" name="issue" required>
+
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
+
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                </select>
+
+                <button type="submit">Submit Ticket</button>
+            </form>
+        </div>
+
+        <h2>Submitted Tickets</h2>
+
+        {% if tickets %}
+            {% for ticket in tickets %}
+                <div class="card ticket">
+                    <h3>{{ ticket.issue }}</h3>
+
+                    <p class="ticket-info">
+                        <strong>Ticket ID:</strong> {{ ticket.id }}<br>
+                        <strong>Name:</strong> {{ ticket.name }}<br>
+                        <strong>Email:</strong> {{ ticket.email }}<br>
+                        <strong>Priority:</strong> {{ ticket.priority }}<br>
+                        <strong>Status:</strong> {{ ticket.status }}<br>
+                        <strong>Created:</strong> {{ ticket.created_at }}
+                    </p>
+
+                    <p>{{ ticket.description }}</p>
+
+                    <form class="status-form"
+                          action="/update/{{ ticket.id }}"
+                          method="POST">
+                        <label for="status-{{ ticket.id }}">
+                            Update Status
+                        </label>
+
+                        <select id="status-{{ ticket.id }}" name="status">
+                            <option value="Open">Open</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                        </select>
+
+                        <button type="submit">Update Ticket</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="card">
+                <p>No tickets have been submitted yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
