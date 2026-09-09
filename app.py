@@ -15,9 +15,9 @@ def index():
 def create_ticket():
     ticket = {
         "id": len(tickets) + 1,
-        "title": request.form["title"],
-        "description": request.form["description"],
-        "priority": request.form["priority"],
+        "title": request.form.get("title", ""),
+"description": request.form.get("description", ""),
+"priority": request.form.get("priority", "Low"),
         "status": "Open",
         "created_at": datetime.now().strftime("%d-%m-%Y %H:%M")
     }
