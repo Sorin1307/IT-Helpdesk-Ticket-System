@@ -1,91 +1,40 @@
+from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 
+app = Flask(__name__)
 
 tickets = []
 
 
+@app.route("/")
+def index():
+    return render_template("index.html", tickets=tickets)
+
+
+@app.route("/create", methods=["POST"])
 def create_ticket():
-    print("\n--- Create New Ticket ---")
-
-    title = input("Problem title: ")
-    description = input("Problem description: ")
-    priority = input("Priority (Low/Medium/High): ")
-
     ticket = {
         "id": len(tickets) + 1,
-        "title": title,
-        "description": description,
-        "priority": priority,
+        "title": request.form["title"],
+        "description": request.form["description"],
+        "priority": request.form["priority"],
         "status": "Open",
         "created_at": datetime.now().strftime("%d-%m-%Y %H:%M")
     }
 
     tickets.append(ticket)
-    print(f"\nTicket #{ticket['id']} created successfully!")
+    return redirect(url_for("index"))
 
 
-def view_tickets():
-    print("\n--- All Support Tickets ---")
-
-    if not tickets:
-        print("No tickets have been created.")
-        return
-
+@app.route("/update/<int:ticket_id>", methods=["POST"])
+def update_ticket(ticket_id):
     for ticket in tickets:
-        print(f"\nTicket ID: {ticket['id']}")
-        print(f"Title: {ticket['title']}")
-        print(f"Description: {ticket['description']}")
-        print(f"Priority: {ticket['priority']}")
-        print(f"Status: {ticket['status']}")
-        print(f"Created: {ticket['created_at']}")
-
-
-def update_ticket():
-    view_tickets()
-
-    if not tickets:
-        return
-
-    try:
-        ticket_id = int(input("\nEnter ticket ID: "))
-
-        for ticket in tickets:
-            if ticket["id"] == ticket_id:
-                new_status = input(
-                    "New status (Open/In Progress/Resolved): "
-                )
-                ticket["status"] = new_status
-                print("Ticket status updated successfully!")
-                return
-
-        print("Ticket not found.")
-
-    except ValueError:
-        print("Please enter a valid ticket ID.")
-
-
-def main():
-    while True:
-        print("\n===== IT HELPDESK TICKET SYSTEM =====")
-        print("1. Create a ticket")
-        print("2. View all tickets")
-        print("3. Update ticket status")
-        print("4. Exit")
-
-        choice = input("\nChoose an option: ")
-
-        if choice == "1":
-            create_ticket()
-        elif choice == "2":
-            view_tickets()
-        elif choice == "3":
-            update_ticket()
-        elif choice == "4":
-            print("Thank you for using the IT Helpdesk System.")
+        if ticket["id"] == ticket_id:
+            ticket["status"] = request.form["status"]
             break
-        else:
-            print("Invalid option. Please choose 1, 2, 3 or 4.")
+
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)
