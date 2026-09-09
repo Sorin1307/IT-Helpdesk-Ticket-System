@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Helpdesk Ticket System</title>
 
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1d4ed8;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .ticket {
+            border-left: 5px solid #2563eb;
+            background: #f9fafb;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 7px;
+        }
+
+        .ticket h3 {
+            margin-top: 0;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>IT Helpdesk Ticket System</h1>
+        <p class="subtitle">
+            Submit and manage technical support requests
+        </p>
+
+        <div class="card">
+            <h2>Create a New Ticket</h2>
+
+            <form method="POST" action="/">
+                <label for="name">Your Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    required
+                >
+
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                >
+
+                <label for="issue">Issue Title</label>
+                <input
+                    type="text"
+                    id="issue"
+                    name="issue"
+                    placeholder="Example: Cannot access email"
+                    required
+                >
+
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                </select>
+
+                <label for="description">Description</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Describe the technical problem"
+                    required
+                ></textarea>
+
+                <button type="submit">Submit Ticket</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Submitted Tickets</h2>
+
+            {% if tickets %}
+                {% for ticket in tickets %}
+                    <div class="ticket">
+                        <h3>{{ ticket.issue }}</h3>
+                        <p><strong>Name:</strong> {{ ticket.name }}</p>
+                        <p><strong>Email:</strong> {{ ticket.email }}</p>
+                        <p><strong>Priority:</strong> {{ ticket.priority }}</p>
+                        <p>{{ ticket.description }}</p>
+                        <span class="status">Open</span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="empty-message">No tickets have been submitted yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
