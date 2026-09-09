@@ -15,9 +15,11 @@ def index():
 def create_ticket():
     ticket = {
         "id": len(tickets) + 1,
+        "name": request.form.get("name", ""),
+        "email": request.form.get("email", ""),
         "title": request.form.get("title", ""),
-"description": request.form.get("description", ""),
-"priority": request.form.get("priority", "Low"),
+        "description": request.form.get("description", ""),
+        "priority": request.form.get("priority", "Low"),
         "status": "Open",
         "created_at": datetime.now().strftime("%d-%m-%Y %H:%M")
     }
@@ -30,7 +32,7 @@ def create_ticket():
 def update_ticket(ticket_id):
     for ticket in tickets:
         if ticket["id"] == ticket_id:
-            ticket["status"] = request.form["status"]
+            ticket["status"] = request.form.get("status", "Open")
             break
 
     return redirect(url_for("index"))
